@@ -279,134 +279,97 @@
         </div>
     
         <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
-        <script>
-            // Initialize particles.js
-            particlesJS('particles-js', {
-                particles: {
-                    number: {
-                        value: 80,
-                        density: {
-                            enable: true,
-                            value_area: 800
-                        }
-                    },
-                    color: {
-                        value: '#888888'
-                    },
-                    shape: {
-                        type: 'circle',
-                    },
-                    opacity: {
-                        value: 0.5,
-                        random: true,
-                    },
-                    size: {
-                        value: 3,
-                        random: true,
-                    },
-                    line_linked: {
-                        enable: true,
-                        distance: 150,
-                        color: '#888888',
-                        opacity: 0.4,
-                        width: 1
-                    },
-                    move: {
-                        enable: true,
-                        speed: 6,
-                        direction: 'none',
-                        random: false,
-                        straight: false,
-                        out_mode: 'out',
-                        bounce: false,
-                    }
-                },
-                interactivity: {
-                    detect_on: 'canvas',
-                    events: {
-                        onhover: {
-                            enable: true,
-                            mode: 'repulse'
-                        },
-                        onclick: {
-                            enable: false
-                        },
-                        resize: true
-                    },
-                },
-                retina_detect: true
-            });
-    
-            // Dark mode toggle
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const body = document.body;
-    
-            function applyDarkMode() {
-                const isDarkMode = localStorage.getItem('dark-mode') === 'true';
-                if (isDarkMode) {
-                    body.classList.add('dark-mode');
-                    darkModeToggle.innerText = "☀️";
-                } else {
-                    body.classList.remove('dark-mode');
-                    darkModeToggle.innerText = "🌓";
-                }
-            }
-    
-            // Apply dark mode on page load
-            applyDarkMode();
-    
-            // Toggle dark mode
-            darkModeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                const isDarkModeOn = body.classList.contains('dark-mode');
-                localStorage.setItem('dark-mode', isDarkModeOn);
-                darkModeToggle.innerText = isDarkModeOn ? "☀️" : "🌓";
-            });
-    
-            // Dynamic content loading
-            const experienceList = document.getElementById('experience-list');
-            const projectsList = document.getElementById('projects-list');
-            const converter = new showdown.Converter({
-                simpleLineBreaks: true,
-                strikethrough: true,
-                tables: true,
-            });
-    
-            // Load markdown files
-            async function fetchMarkdownFiles(folder) {
-                const response = await fetch(`https://api.github.com/repos/tanayap/tanayap.github.io/contents/${folder}`);
-                const files = await response.json();
-                
-                for (const file of files) {
-                    if (file.name.endsWith('.md')) {
-                        const fileRes = await fetch(file.download_url);
-                        const mdContent = await fileRes.text();
-                        const htmlContent = converter.makeHtml(mdContent);
-                        
-                        const title = mdContent.split('\n')[0].replace(/^#+\s*/, '');
-                        const contentWithoutTitle = mdContent.replace(/^.+\n/, '');
-                        const htmlContentWithoutTitle = converter.makeHtml(contentWithoutTitle);
-    
-                        const card = `
-                            <div class="markdown-container bg-white p-4 rounded shadow-md transition-colors duration-200 hover:bg-gray-100 w-full overflow-auto flex-none mx-2 my-2">
-                                <h2 class="text-xl font-semibold mb-2">${title}</h2>
-                                <div>${htmlContentWithoutTitle}</div>
-                            </div>
-                        `;
-    
-                        if (folder === 'experience') {
-                            experienceList.innerHTML += card;
-                        } else if (folder === 'projects') {
-                            projectsList.innerHTML += card;
-                        }
-                    }
-                }
-            }
-    
-            // Load content
-            fetchMarkdownFiles('experience');
-            fetchMarkdownFiles('projects');
-        </script>
+<script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+<script>
+// Particles.js configuration
+particlesJS('particles-js', {
+    particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: '#888888' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: {
+            enable: true,
+            distance: 150,
+            color: '#888888',
+            opacity: 0.4,
+            width: 1
+        },
+        move: {
+            enable: true,
+            speed: 6,
+            direction: 'none',
+            random: false,
+            straight: false,
+            out_mode: 'out',
+            bounce: false,
+        }
+    },
+    interactivity: {
+        detect_on: 'canvas',
+        events: {
+            onhover: { enable: true, mode: 'repulse' },
+            onclick: { enable: false },
+            resize: true
+        },
+    },
+    retina_detect: true
+});
+
+// Dark mode functionality
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+const body = document.body;
+
+function applyDarkMode() {
+    const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+    if (isDarkMode) {
+        body.classList.add('dark-mode');
+        darkModeToggle.innerText = "☀️";
+    } else {
+        body.classList.remove('dark-mode');
+        darkModeToggle.innerText = "🌓";
+    }
+}
+
+applyDarkMode();
+
+darkModeToggle.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    const isDarkModeOn = body.classList.contains('dark-mode');
+    localStorage.setItem('dark-mode', isDarkModeOn);
+    darkModeToggle.innerText = isDarkModeOn ? "☀️" : "🌓";
+});
+
+// Dynamic content loading
+const experienceList = document.getElementById('experience-list');
+const projectsList = document.getElementById('projects-list');
+const converter = new showdown.Converter();
+
+async function loadMarkdownContent(filePath, containerId) {
+    try {
+        const response = await fetch(`https://raw.githubusercontent.com/tanaya09/tanaya09.github.io/main/${filePath}`);
+        const text = await response.text();
+        const html = converter.makeHtml(text);
+        document.getElementById(containerId).innerHTML += `
+            <div class="markdown-container bg-white p-4 rounded shadow-md transition-colors duration-200 hover:bg-gray-100">
+                ${html}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading markdown:', error);
+    }
+}
+
+// Load experience
+loadMarkdownContent('experience/wilo.md', 'experience-list');
+
+// Load projects
+const projects = ['ai-resume.md', 'time-banking.md', 'llm-analysis.md', 'agro-advice.md'];
+projects.forEach(project => {
+    loadMarkdownContent(`projects/${project}`, 'projects-list');
+});
+</script>
+</body>
     </body>
     </html>
